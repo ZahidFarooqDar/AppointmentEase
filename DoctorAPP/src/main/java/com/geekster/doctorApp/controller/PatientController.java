@@ -5,6 +5,7 @@ import com.geekster.doctorApp.dto.SignInInput;
 import com.geekster.doctorApp.dto.SignInOutput;
 import com.geekster.doctorApp.dto.SignUpInput;
 import com.geekster.doctorApp.dto.SignUpOutput;
+import com.geekster.doctorApp.model.Appointment;
 import com.geekster.doctorApp.model.AppointmentKey;
 import com.geekster.doctorApp.model.Doctor;
 import com.geekster.doctorApp.model.Patient;
@@ -64,9 +65,6 @@ public class PatientController {
         {
             status = HttpStatus.FORBIDDEN;
         }
-
-
-
         return new ResponseEntity<List<Doctor>>(allDoctors, status);
     }
 
@@ -93,8 +91,40 @@ public class PatientController {
         return new ResponseEntity<Void>(status);
 
     }
+    @GetMapping("/appointments")
+    public ResponseEntity<List<Appointment>> getAllAppointments(@RequestParam Long PatientId, @RequestParam String userEmail, @RequestParam String token)
+    {
+        HttpStatus status;
+        List<Appointment> allAppointments = null;
+        long pId;
+        //authenticate
 
+        //token : calculate token -> find email in Db corr to this token-> match the emails
+        if(authService.authenticate(userEmail,token))
+        {
+            Long Pid = PatientId;
+            allAppointments =  patientService.getAllAppointments(Pid);
+            status = HttpStatus.OK;
+        }
+        else
+        {
+            status = HttpStatus.FORBIDDEN;
+        }
+        ResponseEntity<List<Appointment>> responseEntity = new ResponseEntity<>(allAppointments, status);
 
-
-
+        return responseEntity;
+    }
+    /*@GetMapping("/{patientId}/appointments")
+    public ResponseEntity<List<Appointment>> getAllAppointmentsForPatient(
+            @PathVariable Long patientId,
+            @RequestParam("token") String token
+    ) {
+        try {
+            List<Appointment> appointments = patientService.getAppointmentsForPatient(patientId, token);
+            return ResponseEntity.ok(appointments);
+        } catch (Exception e) {
+            //return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
+            return (ResponseEntity<List<Appointment>>) ResponseEntity.badRequest();
+        }
+    }*/
 }

@@ -1,18 +1,15 @@
 package com.geekster.doctorApp.service;
-
-
 import com.geekster.doctorApp.dto.SignInInput;
 import com.geekster.doctorApp.dto.SignInOutput;
 import com.geekster.doctorApp.dto.SignUpInput;
 import com.geekster.doctorApp.dto.SignUpOutput;
-import com.geekster.doctorApp.model.AppointmentKey;
-import com.geekster.doctorApp.model.AuthenticationToken;
-import com.geekster.doctorApp.model.Doctor;
-import com.geekster.doctorApp.model.Patient;
+import com.geekster.doctorApp.model.*;
+import com.geekster.doctorApp.repository.IAppointmentRepo;
 import com.geekster.doctorApp.repository.IPatientRepo;
+import com.geekster.doctorApp.repository.ITokenRepo;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -34,6 +31,12 @@ public class PatientService {
 
     @Autowired
     DoctorService doctorService;
+    @Autowired
+    IPatientRepo patientRepo;
+    @Autowired
+    ITokenRepo tokenRepo;
+    @Autowired
+    IAppointmentRepo appointmentRepo;
 
     public SignUpOutput signUp(SignUpInput signUpDto) {
 
@@ -132,10 +135,32 @@ public class PatientService {
     public List<Doctor> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
+    public List<Appointment> getAllAppointments(Long patientId) {
+        return appointmentRepo.findByPatient_PatientId(patientId);
+    }
+    /*public List<Appointment> getAppointmentsForPatient(Long patientId, String Token) {
+        //authenticatePatient(patientId,Token);
+        //if(authenticatePatient(patientId,Token) == true) {
+
+            List<Appointment> appointments = appointmentRepo.findByPatientId(patientId);
+            return appointments;
+
+        //throw new IllegalStateException("Unauthorized user");
+    }*/
 
     public void cancelAppointment(AppointmentKey key) {
 
         appointmentService.cancelAppointment(key);
 
     }
+    /*public Boolean authenticatePatient(Long patientId, String authToken) {
+        // Fetch the patient by their ID
+        Patient patient = patientRepo.findByPatientId(patientId);
+        AuthenticationToken authenticationToken = tokenRepo.findByPatientAndToken(patient, authToken);
+
+        if (patient == null || authenticationToken == null) {
+            return false;
+        }
+        return  true;
+    }*/
 }

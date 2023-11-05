@@ -1,6 +1,7 @@
 package com.geekster.doctorApp.controller;
 
 
+import com.geekster.doctorApp.ServiceModels.DoctorSM;
 import com.geekster.doctorApp.model.Appointment;
 import com.geekster.doctorApp.model.Doctor;
 import com.geekster.doctorApp.service.DoctorService;
@@ -19,9 +20,9 @@ public class DoctorController {
     DoctorService docService;
 
     @PostMapping()
-    void addDoctors(@RequestBody Doctor doc)
+    public Doctor addDoctors(@RequestBody DoctorSM doc)
     {
-        docService.addDoc(doc);
+        return docService.addDoctor(doc);
     }
 
     @GetMapping("{docId}/appointments")
