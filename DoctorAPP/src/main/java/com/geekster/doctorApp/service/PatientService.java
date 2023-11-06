@@ -21,14 +21,10 @@ public class PatientService {
 
     @Autowired
     IPatientRepo iPatientRepo;
-
-
     @Autowired
     AuthenticationService tokenService;
-
     @Autowired
     AppointmentService appointmentService;
-
     @Autowired
     DoctorService doctorService;
     @Autowired
@@ -109,9 +105,6 @@ public class PatientService {
             e.printStackTrace();
 
         }
-
-
-
         //match it with database encrypted password
 
         boolean isPasswordValid = encryptedPassword.equals(patient.getPatientPassword());
@@ -136,6 +129,8 @@ public class PatientService {
         return doctorService.getAllDoctors();
     }
     public List<Appointment> getAllAppointments(Long patientId) {
+        Patient patient = patientRepo.findByPatientId(patientId);
+        //authenticatePatient(patient.getPatientId());
         return appointmentRepo.findByPatient_PatientId(patientId);
     }
     /*public List<Appointment> getAppointmentsForPatient(Long patientId, String Token) {
@@ -153,7 +148,7 @@ public class PatientService {
         appointmentService.cancelAppointment(key);
 
     }
-    /*public Boolean authenticatePatient(Long patientId, String authToken) {
+    public Boolean authenticatePatient(Long patientId, String authToken) {
         // Fetch the patient by their ID
         Patient patient = patientRepo.findByPatientId(patientId);
         AuthenticationToken authenticationToken = tokenRepo.findByPatientAndToken(patient, authToken);
@@ -162,5 +157,5 @@ public class PatientService {
             return false;
         }
         return  true;
-    }*/
+    }
 }

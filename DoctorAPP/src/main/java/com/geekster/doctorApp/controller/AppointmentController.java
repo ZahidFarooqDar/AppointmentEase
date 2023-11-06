@@ -23,14 +23,19 @@ public class AppointmentController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentTime,
             @RequestParam String token) {
 
-        Appointment appointment = appointmentService.createAppointment2(doctorId, patientId, appointmentTime,token);
+        Appointment appointment = appointmentService.createAppointment(doctorId, patientId, appointmentTime, token);
 
         if (appointment != null) {
             return ResponseEntity.ok(appointment);
         } else {
             return ResponseEntity.badRequest().build();
         }
-
-
     }
-}
+        @GetMapping("/date")
+        public Boolean isDateAvailable(@RequestParam Long doctorId,
+                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentTime){
+            Boolean isDateAvailable = appointmentService.isAppointmentTimeAvailable(doctorId, appointmentTime);
+            return isDateAvailable;
+        }
+    }
+
