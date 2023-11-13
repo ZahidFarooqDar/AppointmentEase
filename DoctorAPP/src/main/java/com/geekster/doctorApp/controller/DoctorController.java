@@ -1,9 +1,8 @@
 package com.geekster.doctorApp.controller;
-
-
 import com.geekster.doctorApp.ServiceModels.DoctorSM;
 import com.geekster.doctorApp.model.Appointment;
 import com.geekster.doctorApp.model.Doctor;
+import com.geekster.doctorApp.service.AuthenticationService;
 import com.geekster.doctorApp.service.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +17,8 @@ public class DoctorController {
 
     @Autowired
     DoctorService docService;
+    @Autowired
+    AuthenticationService authService;
 
     @PostMapping()
     public Doctor addDoctors(@RequestBody DoctorSM doc)
@@ -34,7 +35,6 @@ public class DoctorController {
         try
         {
             myAppointments = docService.getMyAppointments(docId);
-            //System.out.println(myAppointments);
             if(myAppointments.isEmpty())
             {
                 status = HttpStatus.NO_CONTENT;
@@ -46,14 +46,27 @@ public class DoctorController {
         }
         catch(Exception e)
         {
-            System.out.println("The doc Id is not valid");
             status = HttpStatus.BAD_REQUEST;
-
         }
-
         return new ResponseEntity<List<Appointment>>(myAppointments,status);
-
     }
+    @GetMapping()
+    public ResponseEntity<List<Doctor>> getAllDoctors(@RequestParam String userEmail, @RequestParam String token)
+    {
+        HttpStatus status;
+        List<Doctor> allDoctors = null;
+        //token : calculate token -> find email in Db corr to this token-> match the emails
+        if(authService.authenticate(userEmail,token))
+        {
+            allDoctors =  docService.getAllDoctors();
+            status = HttpStatus.OK;
+        }
+        else
+        {
+            status = HttpStatus.FORBIDDEN;
+        }
+        ResponseEntity<List<Doctor>> responseEntity = new ResponseEntity<>(allDoctors, status);
 
-
+        return responseEntity;
+    }
 }

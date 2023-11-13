@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("appointment")
 public class AppointmentController {
-
     @Autowired
     AppointmentService appointmentService;
     @PostMapping("/create")
@@ -22,16 +21,14 @@ public class AppointmentController {
             @RequestParam Long patientId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentTime,
             @RequestParam String token) {
-
         Appointment appointment = appointmentService.createAppointment(doctorId, patientId, appointmentTime, token);
-
         if (appointment != null) {
             return ResponseEntity.ok(appointment);
         } else {
             return ResponseEntity.badRequest().build();
         }
     }
-        @GetMapping("/date")
+    @GetMapping("/date")
         public Boolean isDateAvailable(@RequestParam Long doctorId,
                 @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentTime){
             Boolean isDateAvailable = appointmentService.isAppointmentTimeAvailable(doctorId, appointmentTime);

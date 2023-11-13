@@ -9,6 +9,7 @@ import com.geekster.doctorApp.repository.ITokenRepo;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,34 +33,25 @@ public class AppointmentService {
             throw new EntityNotFoundException("Patient not found or invalid token.");
         }
         Doctor doctor = doctorRepository.findByDoctorId(doctorId);
-        //Patient patient = patientRepository.findByPatientId(patientId);
-
         if (doctor == null ) {
             throw new EntityNotFoundException("Doctor not found.");
         }
-            // Create a new appointment with a valid ID
             Appointment appointment = new Appointment();
             appointment.setDoctor(doctor);
             appointment.setPatient(patient);
             appointment.setAppointmentDate(appointmentTime);
-
-            // Save the appointment
             Appointment savedAppointment = appointmentRepo.save(appointment);
 
             return savedAppointment;
     }
-
-
-    public void cancelAppointment(AppointmentKey key) {
-        appointmentRepo.deleteById(key);
+    @Transactional
+    public void cancelAppointment(Long appointmentId,Long patientId) {
+        appointmentRepo.deleteByIdAndPatientId(appointmentId, patientId);
     }
-
     public boolean isAppointmentTimeAvailable(Long doctorId, LocalDateTime appointmentTime) {
 
         Doctor doctor = doctorRepository.findByDoctorId(doctorId);
         List<Appointment> existingAppointments = appointmentRepo.findByDoctorAndAppointmentDate(doctor, appointmentTime);
-
-        // Check if there are any existing appointments at the specified time
         return existingAppointments.isEmpty();
     }
 }

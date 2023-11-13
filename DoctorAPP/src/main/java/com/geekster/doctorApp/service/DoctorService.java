@@ -14,10 +14,8 @@ import java.util.List;
 
 @Service
 public class DoctorService {
-
     @Autowired
     IDoctorRepo doctorRepo;
-
     public Doctor addDoctor(@RequestBody DoctorSM doctor) {
         Doctor doc = new Doctor();
         doc.setDoctorId(doctor.getDoctorId());
@@ -26,22 +24,16 @@ public class DoctorService {
 
         return doctorRepo.save(doc);
     }
-
     public List<Doctor> getAllDoctors() {
         List<Doctor> allDoctors = doctorRepo.findAll();
         return allDoctors;
-
     }
-
     public List<Appointment> getMyAppointments(Long docId) {
-
         Doctor myDoc = doctorRepo.findByDoctorId(docId);
-
         if(myDoc == null)
         {
             throw new IllegalStateException("The doctor does not exist");
         }
-
         return myDoc.getAppointments();
     }
 }
